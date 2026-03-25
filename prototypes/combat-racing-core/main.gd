@@ -256,11 +256,13 @@ func _update_camera(delta: float) -> void:
 
 	var offset: Vector3
 	match player.state:
-		0:  # RIDING
+		RiderScript.State.RIDING:
 			offset = Vector3(0, 4.5, -8)
-		1:  # FLYING — pull back for drama
+		RiderScript.State.FLYING:
 			offset = Vector3(0, 7, -12)
-		2:  # ON_FOOT
+		RiderScript.State.SLIDING:
+			offset = Vector3(0, 6, -10)
+		RiderScript.State.ON_FOOT:
 			offset = Vector3(0, 5, -9)
 
 	var target_pos := player.position + offset
@@ -385,7 +387,7 @@ func _check_pickups(delta: float) -> void:
 
 		# Check all riders for collection
 		for rider in all_riders:
-			if rider.state != 0:  # Not RIDING
+			if rider.state != RiderScript.State.RIDING:  # Not RIDING
 				continue
 			if rider.position.distance_to(pickup_nodes[i].position) < 1.5:
 				rider.pickup_weapon(1)  # Give BAT
@@ -407,7 +409,7 @@ func _check_pickups(delta: float) -> void:
 			continue
 
 		for rider in all_riders:
-			if rider.state != 0:
+			if rider.state != RiderScript.State.RIDING:
 				continue
 			if rider.position.distance_to(nitro_nodes[i].position) < 1.5:
 				rider.pickup_nitro()

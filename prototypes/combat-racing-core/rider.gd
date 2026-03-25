@@ -21,12 +21,12 @@ const ACCELERATION: float = 45.0
 const BRAKE_FORCE: float = 70.0
 const LANE_MOVE_SPEED: float = 18.0
 const GRAVITY: float = 30.0
-const WALK_SPEED: float = 2.5
+const WALK_SPEED: float = 1.5
 const ROAD_MIN_X: float = -5.5
 const ROAD_MAX_X: float = 5.5
 
 # -- State --
-enum State { RIDING, FLYING, ON_FOOT }
+enum State { RIDING, FLYING, SLIDING, LYING, ON_FOOT }
 var state: int = State.RIDING
 var hp: int = MAX_HP
 var forward_speed: float = 0.0
@@ -54,8 +54,15 @@ var attack_flash_timer: float = 0.0
 var bike_stop_position: Vector3 = Vector3.ZERO
 var fly_time: float = 0.0
 var stopped_bike_marker: Node3D = null
-var is_sliding: bool = false  # Ground slide vs airborne
 const SLIDE_FRICTION: float = 8.0
+
+# -- Lying --
+var lying_timer: float = 0.0
+var knockout_force: float = 0.0  # Stored for lying duration calc
+const BASE_LIE_TIME: float = 1.5
+const LIE_FORCE_SCALE: float = 0.02
+const LIE_SPEED_SCALE: float = 0.015
+var lying_anim_index: int = 0
 
 # -- AI --
 var ai_speed_target: float = 0.0
@@ -198,6 +205,10 @@ func _physics_process(delta: float) -> void:
 			_process_riding(delta)
 		State.FLYING:
 			_process_flying(delta)
+		State.SLIDING:
+			_process_sliding(delta)
+		State.LYING:
+			_process_lying(delta)
 		State.ON_FOOT:
 			_process_on_foot(delta)
 
@@ -418,8 +429,11 @@ func _start_flying(attacker_pos: Vector3, weapon_used: int = Weapon.FISTS) -> vo
 	hp = 0
 	fly_time = 0.0
 
+	# Capture speed before zeroing — used for launch force calculation
+	var speed_at_impact := forward_speed
+
 	# Bike slides forward and stops
-	bike_stop_position = position + Vector3(0, 0, forward_speed * 0.3)
+	bike_stop_position = position + Vector3(0, 0, speed_at_impact * 0.3)
 	forward_speed = 0.0
 
 	# Launch direction — away from attacker + upward
@@ -431,8 +445,7 @@ func _start_flying(attacker_pos: Vector3, weapon_used: int = Weapon.FISTS) -> vo
 	# Knockout: short flight off the bike, then ground slide
 	# Distance and height scale with the rider's speed at impact
 	# Bat hits add extra force on top of speed-based values
-	is_sliding = true
-	var speed_ratio: float = clampf(forward_speed / MAX_SPEED, 0.2, 1.0)
+	var speed_ratio: float = clampf(speed_at_impact / MAX_SPEED, 0.2, 1.0)
 
 	# Weapon type heavily determines flight arc and distance
 	# Fists: low scrappy tumble, mostly sliding
@@ -445,14 +458,17 @@ func _start_flying(attacker_pos: Vector3, weapon_used: int = Weapon.FISTS) -> vo
 			# Bat: insane sky launch — sends them flying
 			launch_x = away.x * randf_range(20, 35)
 			launch_y = randf_range(55.0, 80.0)
-			launch_z = forward_speed * 0.8 + randf_range(30, 50)
+			launch_z = speed_at_impact * 0.8 + randf_range(30, 50)
 		_:
 			# Fists: moderate arc, noticeable but not huge
 			launch_x = away.x * randf_range(5, 9)
 			launch_y = randf_range(10.0, 16.0) * speed_ratio
-			launch_z = forward_speed * 0.4 + randf_range(5, 10)
+			launch_z = speed_at_impact * 0.4 + randf_range(5, 10)
 
 	velocity = Vector3(launch_x, launch_y, launch_z)
+
+	# Store knockout force for lying duration calculation
+	knockout_force = velocity.length() + speed_at_impact
 
 	# Visuals: hide bike, show body flying
 	bike_mesh.visible = false
@@ -489,45 +505,97 @@ func _process_flying(delta: float) -> void:
 	fly_time += delta
 	velocity.y -= GRAVITY * delta
 
-	if is_sliding and is_on_floor() and fly_time > 0.15:
-		# Ground sliding: apply friction to slow down gradually
+	# Tumble the body in the air
+	body_mesh.rotation_degrees.x += 300.0 * delta
+	body_mesh.rotation_degrees.z += 180.0 * delta
+
+	move_and_slide()
+	position.x = clampf(position.x, ROAD_MIN_X - 3.0, ROAD_MAX_X + 3.0)
+
+	# Transition to SLIDING when hitting the ground
+	if is_on_floor() and fly_time > 0.15:
+		state = State.SLIDING
 		velocity.y = 0.0
-		var speed := Vector2(velocity.x, velocity.z).length()
-		if speed > 0.5:
-			# Friction decelerates the slide
-			var friction_force: float = SLIDE_FRICTION * delta
-			var direction := Vector2(velocity.x, velocity.z).normalized()
-			var new_speed: float = maxf(speed - friction_force * speed, 0.0)
-			velocity.x = direction.x * new_speed
-			velocity.z = direction.y * new_speed
+		fly_time = 0.0
 
-			# Body tumbles along the ground while sliding
-			body_mesh.rotation_degrees.x += 180.0 * delta
-			body_mesh.rotation_degrees.z = sin(fly_time * 8.0) * 25.0
-		else:
-			# Slide finished — come to rest
-			_land()
-			return
+
+# ── SLIDING state ───────────────────────────────────────────────────────────
+
+func _process_sliding(delta: float) -> void:
+	fly_time += delta
+	var speed := Vector2(velocity.x, velocity.z).length()
+
+	if speed > 0.5:
+		# Friction decelerates the slide
+		var friction_force: float = SLIDE_FRICTION * delta
+		var direction := Vector2(velocity.x, velocity.z).normalized()
+		var new_speed: float = maxf(speed - friction_force * speed, 0.0)
+		velocity.x = direction.x * new_speed
+		velocity.z = direction.y * new_speed
+		velocity.y = 0.0
+
+		# Body tumbles along the ground while sliding
+		body_mesh.rotation_degrees.x += 180.0 * delta
+		body_mesh.rotation_degrees.z = sin(fly_time * 8.0) * 25.0
 	else:
-		# Airborne phase (brief hop off bike before sliding)
-		# Tumble the body
-		body_mesh.rotation_degrees.x += 300.0 * delta
-		body_mesh.rotation_degrees.z += 180.0 * delta
+		# Slide finished — transition to LYING
+		_start_lying()
+		return
 
-		# Transition to ground slide when landing
-		if is_on_floor() and fly_time > 0.15:
-			velocity.y = 0.0
+	if not is_on_floor():
+		velocity.y -= GRAVITY * delta
 
 	move_and_slide()
 	position.x = clampf(position.x, ROAD_MIN_X - 3.0, ROAD_MAX_X + 3.0)
 
 
-func _land() -> void:
-	state = State.ON_FOOT
+func _start_lying() -> void:
+	state = State.LYING
 	velocity = Vector3.ZERO
+
+	# Lying duration based on knockout force and speed at impact
+	lying_timer = BASE_LIE_TIME + knockout_force * LIE_FORCE_SCALE
+	lying_anim_index = randi() % 4  # Random lying animation
+
+	# Settle body flat on the ground
 	body_mesh.rotation_degrees = Vector3.ZERO
-	# Shift body down to look like a standing person (no bike)
-	body_mesh.position.y = -0.2
+	match lying_anim_index:
+		0:  # Face-down, arms spread
+			body_mesh.rotation_degrees.x = 90.0
+		1:  # On back, twitching
+			body_mesh.rotation_degrees.x = -90.0
+		2:  # Fetal curl (sideways)
+			body_mesh.rotation_degrees.z = 90.0
+			body_mesh.rotation_degrees.x = 30.0
+		3:  # Sprawled sideways
+			body_mesh.rotation_degrees.z = -70.0
+	body_mesh.position.y = -0.4
+
+
+func _process_lying(delta: float) -> void:
+	lying_timer -= delta
+
+	# Subtle animation while lying
+	match lying_anim_index:
+		0:  # Face-down — slight groan movement
+			body_mesh.position.y = -0.4 + sin(fly_time * 2.0) * 0.02
+		1:  # On back — twitching legs
+			body_mesh.rotation_degrees.z = sin(fly_time * 6.0) * 8.0
+		2:  # Fetal curl — slowly uncurling
+			body_mesh.rotation_degrees.x = 30.0 - (BASE_LIE_TIME - lying_timer) * 10.0
+		3:  # Sprawled — arm reaching toward bike
+			body_mesh.position.x = sin(fly_time * 1.5) * 0.05
+	fly_time += delta
+
+	if lying_timer <= 0.0:
+		_stand_up()
+
+
+func _stand_up() -> void:
+	state = State.ON_FOOT
+	body_mesh.rotation_degrees = Vector3.ZERO
+	body_mesh.position = Vector3(0, -0.2, 0)
+	fly_time = 0.0
 
 
 # ── ON_FOOT state ────────────────────────────────────────────────────────────
@@ -549,7 +617,7 @@ func _process_on_foot(delta: float) -> void:
 	move_and_slide()
 
 	# Exaggerated wobble + bobbing animation for maximum comedy at slow speed
-	fly_time += delta  # Reuse timer for wobble
+	fly_time += delta
 	body_mesh.rotation_degrees.z = sin(fly_time * 6.0) * 18.0
 	body_mesh.rotation_degrees.x = sin(fly_time * 12.0) * 5.0
 	body_mesh.position.y = -0.2 + absf(sin(fly_time * 10.0)) * 0.12
@@ -559,7 +627,6 @@ func _remount() -> void:
 	state = State.RIDING
 	hp = MAX_HP
 	forward_speed = 0.0
-	is_sliding = false
 	weapon = Weapon.FISTS
 	weapon_durability = 0
 	position = bike_stop_position
