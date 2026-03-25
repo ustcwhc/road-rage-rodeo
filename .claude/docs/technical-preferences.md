@@ -5,30 +5,30 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: Godot 4.6
+- **Language**: GDScript (primary), C++ via GDExtension (performance-critical)
+- **Rendering**: Forward+ (default), Compatibility renderer for WebGL export
+- **Physics**: Jolt (Godot 4.6 default)
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: PascalCase (e.g., `PlayerController`)
+- **Variables/Functions**: snake_case (e.g., `move_speed`, `take_damage()`)
+- **Signals**: snake_case past tense (e.g., `health_changed`, `rider_knocked_out`)
+- **Files**: snake_case matching class (e.g., `player_controller.gd`)
+- **Scenes**: PascalCase matching root node (e.g., `PlayerController.tscn`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_HEALTH`)
 
 ## Performance Budgets
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
+- **Target Framerate**: 60 fps (browser WebGL target)
+- **Frame Budget**: 16.6 ms
+- **Draw Calls**: [TO BE CONFIGURED — profile after MVP]
+- **Memory Ceiling**: [TO BE CONFIGURED — profile after MVP]
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
+- **Framework**: GUT (Godot Unit Test)
 - **Minimum Coverage**: [TO BE CONFIGURED]
 - **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
 
