@@ -34,11 +34,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Keyboard input (WASD + arrows) registers in-game with configurable bindings
   4. GameEvents autoload signal bus fires and receives test signals across scenes
   5. Physics interpolation is active and visual smoothness is confirmed at fixed timestep
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Godot project config, input actions, GameEvents signal bus, physics interpolation
+- [ ] 01-02-PLAN.md — Test track, GUT tests, WebGL export verification, WASM size baseline
 
 ### Phase 2: Motorcycle & Camera
 **Goal**: A motorcycle that feels responsive and fun to ride, with a camera that intelligently follows the rider across all states
@@ -178,7 +178,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Pipeline | 0/0 | Not started | - |
+| 1. Foundation & Pipeline | 0/2 | Planned | - |
 | 2. Motorcycle & Camera | 0/0 | Not started | - |
 | 3. Health & Weapons | 0/0 | Not started | - |
 | 4. Combat & Crash Cycle | 0/0 | Not started | - |
