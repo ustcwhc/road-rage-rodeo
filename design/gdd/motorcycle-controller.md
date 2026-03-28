@@ -64,7 +64,88 @@ The controller is invisible when it works right: you never think "I'm pressing b
 
 ### States and Transitions
 
-[To be designed]
+| State | Entry Condition | Exit Condition | Player Input | Movement |
+|-------|----------------|----------------|-------------|----------|
+| **RIDING** | Game start, or remount from ON_FOOT | HP reaches 0 (combat or collision) | Full control: accelerate, brake, steer, attack | Forward speed + lateral steering on road |
+| **FLYING** | HP reaches 0 | Body contacts ground after airborne >0.15s | None (disabled) | Ballistic arc: initial velocity from knockout + gravity (9.8 m/s²). Body tumbles in air. |
+| **SLIDING** | Flying body hits ground | Slide speed drops below 0.5 m/s | None (disabled) | Ground friction decelerates rider. Body tumbles/scrapes along road surface. |
+| **LYING** | Sliding comes to rest | Lying timer expires | None (disabled) | Stationary. Random lying animation from pool. |
+| **ON_FOOT** | Lying timer expires (rider gets up) | Reaches stopped bike (distance < 1.5m) | None (automatic) | Auto-walk toward bike at WALK_SPEED (1.5 m/s), exaggerated wobble animation. |
+
+**Transition Flow:**
+```
+RIDING → FLYING → SLIDING → LYING → ON_FOOT → RIDING
+                                ↑
+                          (run-over → lying timer reset)
+```
+
+**Transition Details:**
+
+- **RIDING → FLYING**: HP ≤ 0. Bike stops at current position + forward momentum offset. Rider launches with velocity based on weapon type + speed at impact. Slow-mo triggers (0.25x, 0.6s).
+- **FLYING → SLIDING**: Body contacts ground after min 0.15s airborne. Retains horizontal velocity, vertical velocity zeroed. Body switches from tumble to ground-scrape animation.
+- **SLIDING → LYING**: Horizontal speed < 0.5 m/s. Body settles into a random lying pose. Lying duration = `BASE_LIE_TIME + knockout_force * LIE_FORCE_SCALE + impact_speed * LIE_SPEED_SCALE`. Harder hits and faster knockouts = longer lying.
+- **LYING (run-over)**: If another rider drives over a lying rider, the lying rider bounces (small upward impulse + comedic squash animation) and the lying timer resets. The riding rider takes no damage. Can happen multiple times.
+- **LYING → ON_FOOT**: Lying timer expires. Rider plays a get-up animation, then begins auto-walk toward bike.
+- **ON_FOOT → RIDING**: Within 1.5m of bike. Full HP restore, speed = 0, weapon = FISTS. Bike marker removed from world.
+
+**Invalid Transitions:**
+- RIDING → ON_FOOT (no voluntary dismount)
+- RIDING → SLIDING (must fly first)
+- RIDING → LYING (must fly and slide first)
+- ON_FOOT → FLYING (can't be knocked out while walking)
+- SLIDING → RIDING (must lie then walk)
+- FLYING → RIDING (must slide, lie, then walk)
+- LYING → RIDING (must walk back)
+
+**Lying Animation Pool** (randomly selected on entry):
+1. Face-down, arms spread — motionless for 1s then slight groan movement
+2. On back, twitching legs — dazed cartoon style
+3. Fetal curl — slowly uncurling
+4. Sprawled sideways — one arm reaching toward bike
+
+#### Flying Animations
+
+**Trigger-Based Flight Style:**
+
+| Knockout Source | Flight Style | Description |
+|----------------|-------------|-------------|
+| Fist knockout | Scrappy tumble | Sloppy sideways spin, arms flailing. Low arc. |
+| Bat knockout | Home-run spin | Clean head-over-heels cartwheel. High dramatic arc. |
+| Low-speed obstacle hit | Flop | Falls off bike sideways, lazy rotation. Short arc. |
+| High-speed obstacle hit | Catapult | Launches forward over handlebars, somersault. Very high/far arc. |
+| Side collision (rider bump) | Lateral spin | Spins horizontally like a top, knocked sideways off bike. |
+
+**Direction influence:** Hit from left = launch right, hit from behind = somersault forward, etc. Launch direction always away from impact source.
+
+**Speed influence:** Overlaid on the flight style — faster speed = faster spin rate, longer air time, wider arc.
+
+**Mid-Air Poses (blended during flight):**
+- Classic cartwheel (spinning head-over-heels)
+- Ragdoll limb flailing (arms and legs spread, chaotic)
+- Helicopter spin (horizontal rotation)
+- Superman pose transitioning into tumble
+- All selected based on flight style, with randomized spin rates for variety
+
+**Landing Outcomes:**
+
+| Condition | Landing Type | Next State |
+|-----------|-------------|------------|
+| Hits a large obstacle mid-flight (barrier, wall) | Hard splat against obstacle, drops straight down | LYING (skip SLIDING) |
+| Hits a small obstacle mid-flight (traffic cone, sign) | Bounces off obstacle, deflects trajectory | Continues FLYING with altered direction |
+| Lands on open road, high speed | Belly flop → bounce → SLIDING | SLIDING |
+| Lands on open road, low speed | Tumble roll → short SLIDING | SLIDING |
+| Lands on open road, very low speed | Flop → minimal slide | SLIDING (brief) |
+
+**Landing animation matches flight style:**
+- Cartwheel flight → tumble roll landing
+- Flop flight → belly flop landing
+- Catapult flight → hard splat or bounce landing
+- Helicopter spin → spinning slide landing
+
+**Mid-Flight Obstacle Collision:**
+- If rider collides with a large immovable obstacle (barrier, building), velocity is zeroed and rider drops into LYING immediately. No sliding phase.
+- If rider collides with a small/breakable obstacle, rider bounces with reduced velocity and altered direction. Flight continues.
+- Obstacle size/type determines which behavior triggers (defined in Track System GDD).
 
 ### Interactions with Other Systems
 
