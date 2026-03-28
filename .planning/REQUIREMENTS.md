@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Foundation
 
-- [ ] **FOUND-01**: Project uses Compatibility renderer from day one (WebGL-only renderer)
+- [x] **FOUND-01**: Project uses Compatibility renderer from day one (WebGL-only renderer)
 - [ ] **FOUND-02**: WebGL export pipeline verified — game loads and runs in desktop browser
 - [ ] **FOUND-03**: WASM size tracked and kept under 10 MB with Brotli compression
-- [ ] **FOUND-04**: Input system maps keyboard (WASD + arrow keys) to game actions with configurable bindings
-- [ ] **FOUND-05**: GameEvents autoload signal bus established for cross-system communication
-- [ ] **FOUND-06**: Physics interpolation enabled to prevent visual jitter at fixed timestep
+- [x] **FOUND-04**: Input system maps keyboard (WASD + arrow keys) to game actions with configurable bindings
+- [x] **FOUND-05**: GameEvents autoload signal bus established for cross-system communication
+- [x] **FOUND-06**: Physics interpolation enabled to prevent visual jitter at fixed timestep
 
 ### Track
 
@@ -159,12 +159,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-01 | Phase 1: Foundation & Pipeline | Complete |
 | FOUND-02 | Phase 1: Foundation & Pipeline | Pending |
 | FOUND-03 | Phase 1: Foundation & Pipeline | Pending |
-| FOUND-04 | Phase 1: Foundation & Pipeline | Pending |
-| FOUND-05 | Phase 1: Foundation & Pipeline | Pending |
-| FOUND-06 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-04 | Phase 1: Foundation & Pipeline | Complete |
+| FOUND-05 | Phase 1: Foundation & Pipeline | Complete |
+| FOUND-06 | Phase 1: Foundation & Pipeline | Complete |
 | MOTO-01 | Phase 2: Motorcycle & Camera | Pending |
 | MOTO-02 | Phase 2: Motorcycle & Camera | Pending |
 | MOTO-03 | Phase 2: Motorcycle & Camera | Pending |
