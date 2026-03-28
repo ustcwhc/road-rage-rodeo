@@ -37,8 +37,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Godot project config, input actions, GameEvents signal bus, physics interpolation
-- [ ] 01-02-PLAN.md — Test track, GUT tests, WebGL export verification, WASM size baseline
+- [x] 01-01-PLAN.md — Godot project config, input actions, GameEvents signal bus, physics interpolation
+- [x] 01-02-PLAN.md — Test track, GUT tests, WebGL export verification, WASM size baseline
 
 ### Phase 2: Motorcycle & Camera
 **Goal**: A motorcycle that feels responsive and fun to ride, with a camera that intelligently follows the rider across all states
