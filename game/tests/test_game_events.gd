@@ -10,11 +10,10 @@ func test_game_events_is_node() -> void:
 	assert_true(GameEvents is Node, "GameEvents must extend Node")
 
 func test_signal_round_trip() -> void:
-	# Emit a signal and verify it is received
-	var received := false
-	GameEvents.race_started.connect(func(): received = true)
+	# Emit a signal and verify it is received using GUT's signal watcher
+	watch_signals(GameEvents)
 	GameEvents.race_started.emit()
-	assert_true(received, "race_started signal round-trip failed")
+	assert_signal_emitted(GameEvents, "race_started", "race_started signal round-trip failed")
 
 func test_rider_lifecycle_signals_exist() -> void:
 	# Verify rider lifecycle signals are declared

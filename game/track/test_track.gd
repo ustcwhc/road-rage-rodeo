@@ -13,11 +13,11 @@ func _ready() -> void:
 	assert(GameEvents != null, "GameEvents autoload not found -- check project.godot [autoload] section")
 
 	# Verify renderer is Compatibility
-	var renderer := ProjectSettings.get_setting("rendering/renderer/rendering_method")
+	var renderer: String = ProjectSettings.get_setting("rendering/renderer/rendering_method")
 	assert(renderer == "gl_compatibility", "Renderer must be gl_compatibility, got: %s" % renderer)
 
 	# Verify physics interpolation is enabled
-	var interp := ProjectSettings.get_setting("physics/common/physics_interpolation")
+	var interp: bool = ProjectSettings.get_setting("physics/common/physics_interpolation")
 	assert(interp == true, "Physics interpolation must be enabled")
 
 	# Verify input actions exist
