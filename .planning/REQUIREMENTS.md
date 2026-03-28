@@ -159,13 +159,81 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| FOUND-01 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-02 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-03 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-04 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-05 | Phase 1: Foundation & Pipeline | Pending |
+| FOUND-06 | Phase 1: Foundation & Pipeline | Pending |
+| MOTO-01 | Phase 2: Motorcycle & Camera | Pending |
+| MOTO-02 | Phase 2: Motorcycle & Camera | Pending |
+| MOTO-03 | Phase 2: Motorcycle & Camera | Pending |
+| MOTO-04 | Phase 2: Motorcycle & Camera | Pending |
+| MOTO-05 | Phase 2: Motorcycle & Camera | Pending |
+| CAM-01 | Phase 2: Motorcycle & Camera | Pending |
+| CAM-02 | Phase 2: Motorcycle & Camera | Pending |
+| CAM-03 | Phase 2: Motorcycle & Camera | Pending |
+| HLTH-01 | Phase 3: Health & Weapons | Pending |
+| HLTH-02 | Phase 3: Health & Weapons | Pending |
+| HLTH-03 | Phase 3: Health & Weapons | Pending |
+| HLTH-04 | Phase 3: Health & Weapons | Pending |
+| WEAP-01 | Phase 3: Health & Weapons | Pending |
+| WEAP-02 | Phase 3: Health & Weapons | Pending |
+| WEAP-03 | Phase 3: Health & Weapons | Pending |
+| WEAP-04 | Phase 3: Health & Weapons | Pending |
+| WEAP-05 | Phase 3: Health & Weapons | Pending |
+| CMBT-01 | Phase 4: Combat & Crash Cycle | Pending |
+| CMBT-02 | Phase 4: Combat & Crash Cycle | Pending |
+| CMBT-03 | Phase 4: Combat & Crash Cycle | Pending |
+| CMBT-04 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-01 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-02 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-03 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-04 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-05 | Phase 4: Combat & Crash Cycle | Pending |
+| CRSH-06 | Phase 4: Combat & Crash Cycle | Pending |
+| AI-01 | Phase 5: AI Riders | Pending |
+| AI-02 | Phase 5: AI Riders | Pending |
+| AI-03 | Phase 5: AI Riders | Pending |
+| AI-04 | Phase 5: AI Riders | Pending |
+| AI-05 | Phase 5: AI Riders | Pending |
+| RACE-01 | Phase 6: Race Management | Pending |
+| RACE-02 | Phase 6: Race Management | Pending |
+| RACE-03 | Phase 6: Race Management | Pending |
+| RACE-04 | Phase 6: Race Management | Pending |
+| RACE-05 | Phase 6: Race Management | Pending |
+| TRCK-01 | Phase 7: Track Content | Pending |
+| TRCK-02 | Phase 7: Track Content | Pending |
+| TRCK-03 | Phase 7: Track Content | Pending |
+| TRCK-04 | Phase 7: Track Content | Pending |
+| TRCK-05 | Phase 7: Track Content | Pending |
+| HUD-01 | Phase 8: HUD & Juice | Pending |
+| HUD-02 | Phase 8: HUD & Juice | Pending |
+| HUD-03 | Phase 8: HUD & Juice | Pending |
+| HUD-04 | Phase 8: HUD & Juice | Pending |
+| HUD-05 | Phase 8: HUD & Juice | Pending |
+| JUICE-01 | Phase 8: HUD & Juice | Pending |
+| JUICE-02 | Phase 8: HUD & Juice | Pending |
+| JUICE-03 | Phase 8: HUD & Juice | Pending |
+| JUICE-04 | Phase 8: HUD & Juice | Pending |
+| JUICE-05 | Phase 8: HUD & Juice | Pending |
+| JUICE-06 | Phase 8: HUD & Juice | Pending |
+| AUD-01 | Phase 9: Audio, Polish & Ship | Pending |
+| AUD-02 | Phase 9: Audio, Polish & Ship | Pending |
+| AUD-03 | Phase 9: Audio, Polish & Ship | Pending |
+| AUD-04 | Phase 9: Audio, Polish & Ship | Pending |
+| AUD-05 | Phase 9: Audio, Polish & Ship | Pending |
+| PLSH-01 | Phase 9: Audio, Polish & Ship | Pending |
+| PLSH-02 | Phase 9: Audio, Polish & Ship | Pending |
+| PLSH-03 | Phase 9: Audio, Polish & Ship | Pending |
+| PLSH-04 | Phase 9: Audio, Polish & Ship | Pending |
+| PLSH-05 | Phase 9: Audio, Polish & Ship | Pending |
 
 **Coverage:**
-- v1 requirements: 56 total
-- Mapped to phases: 0
-- Unmapped: 56
+- v1 requirements: 69 total
+- Mapped to phases: 69
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 after roadmap creation*
